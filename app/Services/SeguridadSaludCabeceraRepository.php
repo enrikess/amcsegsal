@@ -7,6 +7,7 @@ use App\Contracts\ISeguridadSaludCabeceraRepository;
 use App\Models\Elemento;
 use App\Models\SeguridadSaludCabecera;
 use App\Models\SeguridadSaludRespuesta;
+use App\Models\SeguridadSaludResultado;
 use Illuminate\Support\Facades\DB;
 
 class SeguridadSaludCabeceraRepository extends BaseRepository implements ISeguridadSaludCabeceraRepository{
@@ -23,20 +24,36 @@ class SeguridadSaludCabeceraRepository extends BaseRepository implements ISeguri
     }
 
     public function crearCompleto(array $data){
-        // 1 modulo de tipo seguridad y salud
-        $data["tipo_id"] = 1;
 
+
+        //Guarda Cabecera
         $cabecera = SeguridadSaludCabecera::create($data);
 
+        // 1 modulo de tipo seguridad y salud
+        $cabecera->tipo_id = 1;
+
+        //Guarda Respuestas
         $cabecera->SeguridadSaludRespuestas()->saveMany($data["seguridadSaludRespuestas"]);
 
-        $this->calcularResultados($cabecera->id);
-
+        //Calcula calificacion de la cabecera
         $calificacion = $this->calcularCalificacion($cabecera->id);
 
+        //Agregra calificacion a la cabecera
         $cabecera->calificacion = $calificacion;
 
+        //Actualiza calificacion
         $cabecera->save();
+
+
+        //Calcular Resultados
+        $resultados = $this->calcularResultados($cabecera->id);
+
+        //agregar al array de la data
+        $data["seguridadSaludResultados"] = $resultados;
+
+        //guardar resultados
+        $cabecera->SeguridadSaludResultados()->createMany($data["seguridadSaludResultados"]);
+
 
         return $cabecera;
 
@@ -44,10 +61,12 @@ class SeguridadSaludCabeceraRepository extends BaseRepository implements ISeguri
 
     public function calcularCalificacion(int $idCabecera){
 
+        //calcular las respuestas que aplican
         $aplica = SeguridadSaludRespuesta::
                         where('seguridad_salud_cabecera_id','=',$idCabecera)
                         ->where('aplica','=','1')->count();
 
+        //calcular las respuestas que comple
         $cumple = SeguridadSaludRespuesta::
                         where('seguridad_salud_cabecera_id','=',$idCabecera)
                         ->where('aplica','=','1')
@@ -59,7 +78,10 @@ class SeguridadSaludCabeceraRepository extends BaseRepository implements ISeguri
     }
 
     public function calcularResultados(int $idCabecera){
-        $elementos = Elemento::from('elementos as el')->select('el.id as elemento',DB::raw('count(aplica) as cantidad'))
+
+        //contar todas las preguntas que aplican y los que cumplen
+        $elementos = SeguridadSaludResultado::
+        from('elementos as el')->select('el.id as elemento_id',DB::raw('count(aplica) as aplica'),DB::raw('sum(cumple) as cumple'))
                         ->join('lineamientos as li','el.id','=','li.elemento_id')
                         ->join('preguntas as pre','li.id','=','pre.lineamiento_id')
                         ->join('seguridad_salud_respuestas as resp','pre.id','=','resp.pregunta_id')
@@ -68,20 +90,9 @@ class SeguridadSaludCabeceraRepository extends BaseRepository implements ISeguri
                         ->where('cab.id','=',$idCabecera)
                         ->groupBy('el.id')
                         ->get();
-        foreach ($elementos as $key => $value) {
-            dd($value);
-        }
 
-
-
-
-        $resultados = [];
-        var_dump($elementos);
-        return;
-        foreach ($elementos as $elemento) {
-
-        }
-
+        //retornarlos en formato array
+        return $elementos->toArray();
     }
 
 

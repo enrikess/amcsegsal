@@ -63,19 +63,24 @@ class SeguridadSaludController extends Controller
     {
         //Guardar la cabecera
         $cabecera = new SeguridadSaludCabecera();
+
+        //dar formato a la fecha e creacion
         $cabecera->fecha = Carbon::createFromFormat('Y-m-d',$request->fecha);
 
 
         $cabecera->descripcion = $request->descripcion;
 
+        //array donde se guardaran las respuestas
         $todasResp = [];
+
+        //recorrer todas las preguntas
         foreach ($request->nroPregunta as $value) {
 
             $respuesta = new SeguridadSaludRespuesta();
 
+
+            //validar existencia en el request
             if (isset($request->aplica[$value])) {
-
-
                 $respuesta->pregunta_id = $value;
                 $respuesta->aplica = $request->aplica[$value];
 
@@ -91,15 +96,13 @@ class SeguridadSaludController extends Controller
             }
         }
 
+        //guardar las respuestas en un modelo cabecera
         $cabecera->seguridadSaludRespuestas = $todasResp;
 
-        $seg = $this->SegSalCabRepository->crearCompleto($cabecera->toArray());
-        dd($seg);
-        //dd($segSalCabecera);
-        return;
+        //creacion de la cabecera con las respuestas (tambien calcula los resultados)
+        $registro = $this->SegSalCabRepository->crearCompleto($cabecera->toArray());
 
-
-        dd(SeguridadSaludCabecera::first()->fecha->format('d/m/Y'));
+        return redirect()->route('segsal.index')->with('success','Registro creado correctamente fecha: '.$registro->fecha.' Descripcion: '.$registro->descripcion);
     }
 
     public function show($id)

@@ -14,10 +14,13 @@ class CreateSeguridadSaludResultados extends Migration
     public function up()
     {
         Schema::create('seguridad_salud_resultados', function (Blueprint $table) {
+            $table->id();
             $table->boolean('aplica');
-            $table->boolean('cumple');
-            $table->foreignId('lineamiento_id')->constrained()->onDelete('cascade');
+            $table->boolean('cumple')->default('0');;
+            $table->foreignId('elemento_id')->constrained()->onDelete('cascade');
             $table->foreignId('seguridad_salud_cabecera_id')->constrained('seguridad_salud_cabeceras')->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
