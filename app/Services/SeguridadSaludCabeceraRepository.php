@@ -81,7 +81,7 @@ class SeguridadSaludCabeceraRepository extends BaseRepository implements ISeguri
 
         //contar todas las preguntas que aplican y los que cumplen
         $elementos = SeguridadSaludResultado::
-        from('elementos as el')->select('el.id as elemento_id',DB::raw('count(aplica) as aplica'),DB::raw('sum(cumple) as cumple'))
+        from('elementos as el')->select('el.id as elemento_id',DB::raw('count(aplica) as aplica'),DB::raw('IFNULL(sum(cumple)=null,0) as cumple'))
                         ->join('lineamientos as li','el.id','=','li.elemento_id')
                         ->join('preguntas as pre','li.id','=','pre.lineamiento_id')
                         ->join('seguridad_salud_respuestas as resp','pre.id','=','resp.pregunta_id')

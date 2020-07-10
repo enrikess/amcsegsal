@@ -124,6 +124,7 @@
     <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
 
 
+
 <!-- begin:: Aside -->
         @include('includes/sidebar')
 <!-- end:: Aside -->
@@ -174,6 +175,9 @@
                 <!-- begin:: Content -->
                 <div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
                     <!--Begin::content-->
+
+                    @include('includes/flash-message')
+
                     @yield('content')
                     <!--End::content-->
                 </div>

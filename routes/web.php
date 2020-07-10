@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['prefix'=>'segsal','as'=>'segsal.'],function () {
-    Route::get('/', 'SeguridadSaludController@index')->name('index');
+    Route::get('/index', 'SeguridadSaludController@index')->name('index');
     Route::get('/create', 'SeguridadSaludController@create')->name('create');
     Route::post('/store', 'SeguridadSaludController@store')->name('store');
 

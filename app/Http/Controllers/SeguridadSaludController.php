@@ -102,7 +102,7 @@ class SeguridadSaludController extends Controller
         //creacion de la cabecera con las respuestas (tambien calcula los resultados)
         $registro = $this->SegSalCabRepository->crearCompleto($cabecera->toArray());
 
-        return redirect()->route('segsal.index')->with('success','Registro creado correctamente fecha: '.$registro->fecha.' Descripcion: '.$registro->descripcion);
+        return redirect()->route('segsal.index')->with('success','Nuevo registro creado correctamente fecha: '.$registro->fecha->format('d/m/Y').' Descripcion: '.$registro->descripcion);
     }
 
     public function show($id)

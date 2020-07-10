@@ -16,7 +16,7 @@ class CreateSeguridadSaludResultados extends Migration
         Schema::create('seguridad_salud_resultados', function (Blueprint $table) {
             $table->id();
             $table->boolean('aplica');
-            $table->boolean('cumple')->default('0');;
+            $table->boolean('cumple')->default('0');
             $table->foreignId('elemento_id')->constrained()->onDelete('cascade');
             $table->foreignId('seguridad_salud_cabecera_id')->constrained('seguridad_salud_cabeceras')->onDelete('cascade');
 
