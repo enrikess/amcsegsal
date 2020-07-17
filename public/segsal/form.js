@@ -1,5 +1,6 @@
 $(document).ready(function () {
     cmbElemento();
+
 });
 
 //LLenar el combo Elemento

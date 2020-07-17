@@ -7,6 +7,10 @@
     <script src="{{ asset('assets/js/pages/components/extended/sweetalert2.js')}}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/pages/crud/forms/widgets/bootstrap-select.js')}}" type="text/javascript"></script>
     <script src="{{ asset('segsal/form.js')}}" type="text/javascript"></script>
+    <script>
+
+
+    </script>
 @endsection
 
 
@@ -45,7 +49,12 @@
 	</div>
 
 </div>
-<form method="POST" action="{{ route('segsal.store') }}">
+    @if(!isset($segsalcab->id))
+        <form method="POST" action="{{ route('segsal.store') }}">
+    @else
+        <form method="POST" action="{{ route('segsal.update',$segsalcab->id) }}">
+            @method('PUT')
+    @endif
     @csrf
     <div class="row">
 
@@ -57,9 +66,7 @@
                         <div class="form-group row col-6" >
                             <label class="col-4 col-form-label">Descripción:</label>
                             <div class="col-8">
-                                <input class="form-control" type="text" name="descripcion" value="{{  $segsalcab->descripcion }}">
-                                <input class="form-control" type="hidden" name="calificacion" value="12">
-                                <input class="form-control" type="hidden" name="tipo_id" value="1">
+                                <input class="form-control" type="text" name="descripcion" value="{{  $segsalcab->descripcion }}" required>
                             </div>
                         </div>
                         <div class="form-group row col-6" >
@@ -87,8 +94,38 @@
                                     <th>Observación</th>
                                 </tr>
                             </thead>
+
                             <tbody id="tabla_linea_base_respuesta_body">
                                 @foreach ($lineamiento->preguntas as $pregunta)
+                                    @if ($segsalcab->id <>null)
+                                        @php
+                                            $aplica = 0;
+                                            $cumple = null;
+                                            $fuente = '';
+                                            $observacion = ''
+                                        @endphp
+                                    @else
+                                    @php
+                                            $aplica = 1;
+                                            $cumple = null;
+                                            $fuente = '';
+                                            $observacion = ''
+                                        @endphp
+                                    @endif
+
+                                    @foreach ($segsalcab->seguridadSaludRespuestas as $item)
+                                        @if ($item->pregunta_id == $pregunta->id)
+
+                                            @php
+                                                $aplica = $item->aplica;
+                                                $cumple = $item->cumple;
+                                                $fuente = $item->fuente;
+                                                $observacion = $item->observacion
+                                            @endphp
+                                        @endif
+                                    @endforeach
+
+
                                 <tr name="fila_pregunta[]" id="pregunta_{{ $pregunta->id }}" >
                                     <td >{{ $lineamiento->id }}.{{ $pregunta->id }}</td>
                                     <td >{{ $pregunta->descripcion }}</td>
@@ -96,7 +133,12 @@
                                         <span class="kt-switch kt-switch--outline kt-switch--icon kt-switch--success">
                                             <label>
                                                 <input type="hidden" name="nroPregunta[]" value="{{ $pregunta->id }}">
-                                                <input type="checkbox" onchange ="estado_pregunta(this,{{ $pregunta->id }})" value="1" checked="checked" name="aplica[{{ $pregunta->id }}]" id="aplica[{{ $pregunta->id }}]">
+
+                                                <input type="checkbox" onchange ="estado_pregunta(this,{{ $pregunta->id }})" value="1"
+
+                                                        {{ $aplica == null  ? '' : 'checked="checked"'}}
+
+                                                        name="aplica[{{ $pregunta->id }}]" id="aplica[{{ $pregunta->id }}]">
                                                 <span></span>
                                             </label>
                                         </span>
@@ -104,18 +146,27 @@
                                     <td>
                                         <div class="kt-radio-inline">
                                             <label class="kt-radio">
-                                                <input type="radio" name="cumple[{{ $pregunta->id }}]" id="cumple_{{ $pregunta->id }}_true" value="1">si
+                                                <input type="radio" name="cumple[{{ $pregunta->id }}]" id="cumple_{{ $pregunta->id }}_true" {{ $cumple === 1  ? 'checked="checked"' : '' }} {{ $aplica == null  ? 'disabled' : ''}} value="1">si
                                                 <span></span>
                                             </label>
+
                                             <label class="kt-radio">
-                                                <input type="radio" name="cumple[{{ $pregunta->id }}]" id="cumple_{{ $pregunta->id }}_false" value="0">no
+                                                <input type="radio" name="cumple[{{ $pregunta->id }}]" id="cumple_{{ $pregunta->id }}_false" {{ $cumple === 0  ? 'checked="checked"' : '' }} {{ $aplica == null  ? 'disabled' : ''}} value="0">no
                                                 <span></span>
                                             </label>
                                         </div>
                                     </td>
-                                    <td ><textarea class="form-control" name="fuente[{{ $pregunta->id }}]" id="fuente_{{ $pregunta->id }}" rows="2"></textarea></td>
-                                    <td ><textarea class="form-control" name="observacion[{{ $pregunta->id }}]" id="observacion_{{ $pregunta->id }}" rows="2"></textarea></td>
+                                    <td ><textarea class="form-control" name="fuente[{{ $pregunta->id }}]" id="fuente_{{ $pregunta->id }}" rows="2" {{ $aplica == null  ? 'disabled' : ''}}>{{ $fuente }}</textarea></td>
+                                    <td ><textarea class="form-control" name="observacion[{{ $pregunta->id }}]" id="observacion_{{ $pregunta->id }}" rows="2" {{ $aplica == null  ? 'disabled' : ''}}>{{ $observacion }}</textarea></td>
                                 </tr>
+
+
+                                @php
+                                    $aplica = 1;
+                                    $cumple = null;
+                                    $fuente = '';
+                                    $observacion = ''
+                                @endphp
                                 @endforeach
                             </tbody>
                         </table>
@@ -175,7 +226,12 @@
             <!--begin::Portlet-->
             <div class="kt-portlet">
                 <div class="card-body">
-                    <button  type="submit" class="fa fa-save"><i class="socicon-twitter"></i> Guarcar </button>
+                    @if(!isset($segsalcab->id))
+                        <button  type="submit" class="btn btn-label-instagram"><i class="fa fa-save"></i> Guardar </button>
+                    @else
+                        <button  type="submit" class="btn btn-label-instagram" ><i class="fa fa-undo"></i> Actualizar </button>
+                    @endif
+
 
                 </div>
             </div>

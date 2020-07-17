@@ -6,6 +6,8 @@
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js')}}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/pages/components/extended/sweetalert2.js')}}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/pages/crud/forms/widgets/bootstrap-select.js')}}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/pages/components/extended/sweetalert2.js')}}" type="text/javascript"></script>
+    <script src="{{ asset('segsal/index.js')}}" type="text/javascript"></script>
 @endsection
 
 @section('content')
@@ -41,42 +43,41 @@
                 </div>
             </div>
             <div class="kt-portlet__body">
-
-
-
-
-            <!--begin: Datatable -->
-            <table class="table table-striped- table-bordered table-hover table-checkable" >
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Motivo</th>
-                        <th>Calificación Obtenida</th>
-                        <th>Estimación</th>
-                        <th>Editar</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla_marcas_body">
-                </tbody>
-            </table>
-
-            <!--end: Datatable -->
+                <!--begin: Datatable -->
+                <table class="table table-striped- table-bordered table-hover table-checkable" >
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Fecha</th>
+                            <th>Motivo</th>
+                            <th>Calificación Obtenida</th>
+                            <th>Estimación</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    @php
+                        $index = 1;
+                    @endphp
+                    <tbody id="tabla_marcas_body">
+                        @foreach ($cabeceras as $cabecera)
+                        <tr name="" id="" >
+                            <td><a class="btn btn-info btn-md" href="{{route('segsal.show', $cabecera->id)}}">{{ $index }}</a></td>
+                            <td >{{ $cabecera->fecha }}</td>
+                            <td >{{ $cabecera->descripcion }}</td>
+                            <td >{{ $cabecera->calificacion }}</td>
+                            <td><span class='btn btn-bold btn-md btn-font-md btn-label-{{$cabecera->estimacion->color}}' >{{$cabecera->estimacion->nombre}}</span></td>
+                            <td ><a href="{{route('segsal.edit', $cabecera->id)}}" class="btn btn-label-instagram"><i class="la la-edit"></i> Editar </a></td>
+                            <td ><a onclick="EliminarRegistro('{{ $cabecera->id }}','{{ $cabecera->fecha }}','{{ $cabecera->descripcion }}')" class="btn btn-label-google"><i class="la la-edit"></i> Eliminar </a></td>
+                            @php
+                                $index= $index + 1;
+                            @endphp
+                            @endforeach
+                    </tbody>
+                </table>
+                <!--end: Datatable -->
+            </div>
         </div>
-        </div>
-
-
-
-
-        <!--begin: Modal crear marca-->
-        <div class="modal fade" id="modal_agregar_marca" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-
-        </div>
-        <!--end: Modal crear marca-->
-        <!--begin: Modal crear marca-->
-        <div class="modal fade" id="modal_editar_marca" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-
-        </div>
-        <!--end: Modal crear marca-->
     </div>
 </div>
 @endsection

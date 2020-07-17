@@ -21,6 +21,13 @@ Route::group(['prefix'=>'segsal','as'=>'segsal.'],function () {
     Route::get('/index', 'SeguridadSaludController@index')->name('index');
     Route::get('/create', 'SeguridadSaludController@create')->name('create');
     Route::post('/store', 'SeguridadSaludController@store')->name('store');
+    Route::get('/{id}/edit', 'SeguridadSaludController@edit')->name('edit');
+    Route::put('/{id}', 'SeguridadSaludController@update')->name('update');
+    Route::delete('/{id}', 'SeguridadSaludController@destroy')->name('destroy');
+    Route::get('/{id}', 'SeguridadSaludController@show')->name('show');
+    Route::post('/grafico/{id}', 'SeguridadSaludController@grafico')->name('grafico');
+
+
 
     Route::post('/elemento/listar', 'ElementoController@listar')->name('elemento.listar');
     Route::post('/lineamiento/listar', 'LineamientoController@listar')->name('lineamiento.listar');

@@ -41,7 +41,9 @@ class SeguridadSaludController extends Controller
     {
 
         $titulo = "Lista de Estudio de Linea Base";
-        return view('segsal.index',compact('titulo'));
+        $cabeceras = $this->SegSalCabRepository->TodasCabecerasConEstimaciones();
+
+        return view('segsal.index',compact('titulo','cabeceras'));
 
     }
 
@@ -102,23 +104,60 @@ class SeguridadSaludController extends Controller
         //creacion de la cabecera con las respuestas (tambien calcula los resultados)
         $registro = $this->SegSalCabRepository->crearCompleto($cabecera->toArray());
 
-        return redirect()->route('segsal.index')->with('success','Nuevo registro creado correctamente fecha: '.$registro->fecha->format('d/m/Y').' Descripcion: '.$registro->descripcion);
+        return redirect()->route('segsal.index')->with('success','Nuevo registro creado correctamente fecha: '.$registro->fecha->format('d/m/Y').' Descripción: '.$registro->descripcion);
     }
 
     public function show($id)
     {
-        //
+        $titulo = "Ver Resultados";
+
+        $tabla = $this->SegSalCabRepository->tablaCompleta($id);
+        $tablares = $this->SegSalCabRepository->tablaResultados($id);
+        $rowspanelemento = [];
+
+        for ($i=0; $i < count($tabla); $i++) {
+            $var = 0;
+            $indice = 0;
+
+            for ($j=0; $j < count($tabla); $j++) {
+                if ($tabla[$i]->elemento_id == $tabla[$j]->elemento_id) {
+                    $var ++;
+                    $indice = $j;
+                }
+            }
+            $rowspanelemento[$i] = $var;
+            $i = $indice;
+        }
+        $rowspanlineamiento = [];
+
+        for ($i=0; $i < count($tabla); $i++) {
+            $var = 0;
+            $indice = 0;
+
+            for ($j=0; $j < count($tabla); $j++) {
+                if ($tabla[$i]->lineamiento_id == $tabla[$j]->lineamiento_id) {
+                    $var ++;
+                    $indice = $j;
+                }
+            }
+            $rowspanlineamiento[$i] = $var;
+            $i = $indice;
+        }
+
+        $cabecera = $this->SegSalCabRepository->find($id);
+        return view('segsal.show',compact('titulo','cabecera','tabla','rowspanelemento','rowspanlineamiento','tablares'));
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
+        $segsalcab = $this->SegSalCabRepository->TraerCabeceraRespuestas($id);
+
+        $lineamientos = $this->LineamientoRepository->traerPreguntas();
+        $elementos = $this->ElementoRepository->getAll();
+        $titulo = "Actualizar de Estudio de Linea Base";
+
+        return view('segsal.form',compact('titulo','segsalcab','lineamientos','elementos'));
     }
 
     /**
@@ -130,17 +169,65 @@ class SeguridadSaludController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $cabecera = $this->SegSalCabRepository->TraerCabeceraRespuestas($id);
+
+        //dar formato a la fecha e creacion
+        $cabecera->fecha = Carbon::createFromFormat('Y-m-d',$request->fecha);
+
+
+        $cabecera->descripcion = $request->descripcion;
+
+        //array donde se guardaran las respuestas
+        $todasResp = [];
+
+        //recorrer todas las preguntas
+        foreach ($request->nroPregunta as $value) {
+
+            $respuesta = new SeguridadSaludRespuesta();
+
+
+            //validar existencia en el request
+            if (isset($request->aplica[$value])) {
+                $respuesta->pregunta_id = $value;
+                $respuesta->aplica = $request->aplica[$value];
+
+                if (isset($request->cumple[$value])) {
+                    $respuesta->cumple = $request->cumple[$value];
+
+                    if ($respuesta->cumple == 1) {
+                        $respuesta->fuente = $request->fuente[$value];
+                        $respuesta->observacion = $request->observacion[$value];
+                    }
+                }
+                array_push($todasResp,$respuesta);
+            }
+        }
+
+        //guardar las respuestas en un modelo cabecera
+        $cabecera->seguridadSaludRespuestas = $todasResp;
+
+        //creacion de la cabecera con las respuestas (tambien calcula los resultados)
+        $actualizado = $this->SegSalCabRepository->ActualizarCompleto($cabecera->toArray());
+
+
+        return redirect()->route('segsal.index')->with('success','Registro actualizado correctamente fecha: '.$actualizado->fecha->format('d/m/Y').' Descripción: '.$actualizado->descripcion);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        $cabecera = $this->SegSalCabRepository->find($id);
+        $descripcion = $cabecera->descripcion;
+        $fecha = $cabecera->fecha;
+        $this->SegSalCabRepository->delete($cabecera);
+        return redirect()->route('segsal.index')->with('success','Registro eliminado correctamente fecha: '.' Descripción: '.$descripcion);
+    }
+
+
+    public function grafico($id)
+    {
+
+        $grafico = $this->SegSalCabRepository->grafico($id);
+        return $grafico->toArray();
     }
 }
