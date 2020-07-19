@@ -26,6 +26,7 @@ Route::group(['prefix'=>'segsal','as'=>'segsal.'],function () {
     Route::delete('/{id}', 'SeguridadSaludController@destroy')->name('destroy');
     Route::get('/{id}', 'SeguridadSaludController@show')->name('show');
     Route::post('/grafico/{id}', 'SeguridadSaludController@grafico')->name('grafico');
+    Route::any('/pdf/{id}', 'SeguridadSaludController@pdf')->name('pdf');
 
 
 

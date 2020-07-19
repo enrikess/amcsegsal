@@ -230,4 +230,10 @@ class SeguridadSaludController extends Controller
         $grafico = $this->SegSalCabRepository->grafico($id);
         return $grafico->toArray();
     }
-}
+
+    public function pdf($id)
+    {
+
+        $grafico = $this->SegSalCabRepository->grafico($id);
+        return $grafico->toArray();
+    }
