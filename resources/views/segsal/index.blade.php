@@ -52,6 +52,7 @@
                             <th>Motivo</th>
                             <th>Calificación Obtenida</th>
                             <th>Estimación</th>
+                            <th>PDF</th>
                             <th>Editar</th>
                             <th>Eliminar</th>
                         </tr>
@@ -67,6 +68,7 @@
                             <td >{{ $cabecera->descripcion }}</td>
                             <td >{{ $cabecera->calificacion }}</td>
                             <td><span class='btn btn-bold btn-md btn-font-md btn-label-{{$cabecera->estimacion->color}}' >{{$cabecera->estimacion->nombre}}</span></td>
+                            <td ><a href="{{route('segsal.pdf', $cabecera->id)}}" target="_blank" class="btn btn-label-instagram"><i class="la la-file-pdf-o"></i> Ver PDF </a></td>
                             <td ><a href="{{route('segsal.edit', $cabecera->id)}}" class="btn btn-label-instagram"><i class="la la-edit"></i> Editar </a></td>
                             <td ><a onclick="EliminarRegistro('{{ $cabecera->id }}','{{ $cabecera->fecha }}','{{ $cabecera->descripcion }}')" class="btn btn-label-google"><i class="la la-edit"></i> Eliminar </a></td>
                             @php

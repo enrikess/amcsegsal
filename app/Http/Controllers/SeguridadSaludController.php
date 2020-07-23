@@ -9,6 +9,7 @@ use App\Contracts\ISeguridadSaludRespuestaRepository;
 use App\Contracts\ISeguridadSaludResultadoRepository;
 use App\Models\SeguridadSaludCabecera;
 use App\Models\SeguridadSaludRespuesta;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -234,6 +235,53 @@ class SeguridadSaludController extends Controller
     public function pdf($id)
     {
 
-        $grafico = $this->SegSalCabRepository->grafico($id);
-        return $grafico->toArray();
+        $titulo = "Ver Resultados";
+
+        $tabla = $this->SegSalCabRepository->tablaCompleta($id);
+        $tablares = $this->SegSalCabRepository->tablaResultados($id);
+        $rowspanelemento = [];
+
+        for ($i=0; $i < count($tabla); $i++) {
+            $var = 0;
+            $indice = 0;
+
+            for ($j=0; $j < count($tabla); $j++) {
+                if ($tabla[$i]->elemento_id == $tabla[$j]->elemento_id) {
+                    $var ++;
+                    $indice = $j;
+                }
+            }
+            $rowspanelemento[$i] = $var;
+            $i = $indice;
+        }
+        $rowspanlineamiento = [];
+
+        for ($i=0; $i < count($tabla); $i++) {
+            $var = 0;
+            $indice = 0;
+
+            for ($j=0; $j < count($tabla); $j++) {
+                if ($tabla[$i]->lineamiento_id == $tabla[$j]->lineamiento_id) {
+                    $var ++;
+                    $indice = $j;
+                }
+            }
+            $rowspanlineamiento[$i] = $var;
+            $i = $indice;
+        }
+        $cabecera = $this->SegSalCabRepository->find($id);
+
+        $data = [
+            'titulo' => $titulo,
+            'tabla' => $tabla,
+            'tablares' => $tablares,
+            'cabecera' => $cabecera,
+            'rowspanelemento' => $rowspanelemento,
+            'rowspanlineamiento' => $rowspanlineamiento,
+        ];
+        //return view('segsal.pdf',compact('titulo','cabecera','tabla','rowspanelemento','rowspanlineamiento','tablares'));
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('segsal.pdf',$data)->setPaper('a4', 'landscape');;
+        return $pdf->stream();
     }
+}
