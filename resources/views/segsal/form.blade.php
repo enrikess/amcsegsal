@@ -128,7 +128,7 @@
 
                                 <tr name="fila_pregunta[]" id="pregunta_{{ $pregunta->id }}" >
                                     <td >{{ $lineamiento->id }}.{{ $pregunta->id }}</td>
-                                    <td >{{ $pregunta->descripcion }}</td>
+                                    <td >{!! $pregunta->descripcion !!}</td>
                                     <td>
                                         <span class="kt-switch kt-switch--outline kt-switch--icon kt-switch--success">
                                             <label>

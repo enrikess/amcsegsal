@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             'elementos',
             'lineamientos',
             'preguntas',
-            'estimaciones'
+            'estimaciones',
+            'users'
         ]);
 
         $this->call(TipoSeeder::class);
@@ -26,6 +27,7 @@ class DatabaseSeeder extends Seeder
         $this->call(LineamientoSeeder::class);
         $this->call(PreguntaSeeder::class);
         $this->call(EstimacionSeeder::class);
+        $this->call(UserSeeder::class);
     }
 
 

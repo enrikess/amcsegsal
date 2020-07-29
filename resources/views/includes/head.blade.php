@@ -88,12 +88,17 @@
                                     </div>
                                 </a>
                                 <div class="kt-notification__custom kt-space-between">
-                                    <a href=""
-                                        class="btn btn-label btn-label-brand btn-sm btn-bold">Cerrar sesion</a>
+                                    <a
+                                        class="btn btn-label btn-label-brand btn-sm btn-bold" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault();
+                                                      document.getElementById('logout-form').submit();">
+                                         {{ __('Logout') }}</a>
                                 </div>
                             </div>
                             <!--end: Navigation -->
-
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
                         </div>
                     </div>
                     <!--end: User Bar -->

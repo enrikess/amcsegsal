@@ -149,14 +149,14 @@ h1 {
                     <table class="responstable">
                         <thead>
                             <tr>
-                                <th >Elemento</th>
+                                <th style="width: 100px">Elemento</th>
                                 <th >Lineamiento</th>
-                                <th >Item</th>
-                                <th >Indicador</th>
+                                <th style="width: 30px">Item</th>
+                                <th style="width: 300px">Indicador</th>
                                 <th >Fuente</th>
-                                <th >Si</th>
-                                <th >No</th>
-                                <th >No Aplica</th>
+                                <th style="width: 15px">Si</th>
+                                <th style="width: 15px">No</th>
+                                <th style="width: 20px">No Aplica</th>
                                 <th >Observación</th>
                             </tr>
                         </thead>
@@ -166,11 +166,11 @@ h1 {
                                 <td>{{ $tabla[$i]->elemento }}</td>
                                 <td>{{ $tabla[$i]->lineamiento }}</td>
                                 <td>{{ $i+1 }}</td>
-                                <td>{{ $tabla[$i]->pregunta }}</td>
+                                <td>{!! $tabla[$i]->pregunta !!}</td>
                                 <td>{{ $tabla[$i]->fuente }}</td>
-                                <td>{{ $tabla[$i]->cumple == 1 &&  $tabla[$i]->cumple != null ? 'X' : '' }}</td>
-                                <td>{{ $tabla[$i]->cumple == 0 && $tabla[$i]->cumple != null ? 'X' : '' }}</td>
-                                <td>{{ $tabla[$i]->aplica == 1 ?  '' : 'X' }}</td>
+                                <td>{{ isset($tabla[$i]->aplica) &&  $tabla[$i]->cumple == 1 ? 'X' : '' }}</td>
+                                <td>{{ isset($tabla[$i]->aplica) && $tabla[$i]->cumple == 0 ? 'X' : '' }}</td>
+                                <td>{{ empty($tabla[$i]->aplica)  ?  'X' : '' }}</td>
                                 <td>{{ $tabla[$i]->observacion }}</td>
                             </tr>
                             @endfor

@@ -33,5 +33,35 @@ class ElementoSeeder extends Seeder
             'codigo' => 'plan_aplic',
             'tipo_id' => $tipo->id
         ]);
+
+        DB::table('elementos')->insert([
+            'nombre' => 'IMPLEMENTACIÓN Y OPERACIÓN',
+            'codigo' => 'impl_oper',
+            'tipo_id' => $tipo->id
+        ]);
+
+        DB::table('elementos')->insert([
+            'nombre' => 'EVALUACIÓN NORMATIVA',
+            'codigo' => 'eval_norm',
+            'tipo_id' => $tipo->id
+        ]);
+
+        DB::table('elementos')->insert([
+            'nombre' => 'VERIFICACIÓN',
+            'codigo' => 'verif',
+            'tipo_id' => $tipo->id
+        ]);
+
+        DB::table('elementos')->insert([
+            'nombre' => 'CONTROL DE INFORMACIÓN Y DOCUMENTOS',
+            'codigo' => 'ctrl_inf_doc',
+            'tipo_id' => $tipo->id
+        ]);
+
+        DB::table('elementos')->insert([
+            'nombre' => 'REVISIÓN POR LA DIRECCIÓN',
+            'codigo' => 'rev_x_direc',
+            'tipo_id' => $tipo->id
+        ]);
     }
 }
